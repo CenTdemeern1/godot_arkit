@@ -46,7 +46,7 @@ static void terminate(ModuleInitializationLevel level) {
 	unregister_arkit_types();
 }
 
-extern "C" GDExtensionBool objcgdextension_entrypoint(
+extern "C" GDExtensionBool GDE_EXPORT objcgdextension_entrypoint(
 	GDExtensionInterfaceGetProcAddress p_getprocaccess,
 	GDExtensionClassLibraryPtr p_library,
 	GDExtensionInitialization *r_initialization
