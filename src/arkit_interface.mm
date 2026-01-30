@@ -313,6 +313,20 @@ uint32_t ARKitInterface::_get_capabilities() const {
 	return XRInterface::XR_MONO | XRInterface::XR_AR;
 }
 
+UIInterfaceOrientation ARKitInterface::get_screen_orientation() const {
+	UIInterfaceOrientation orientation = UIInterfaceOrientationUnknown;
+
+	if (@available(iOS 16, *)) {
+		orientation = [UIApplication sharedApplication].delegate.window.windowScene.effectiveGeometry.interfaceOrientation;
+	} else if (@available(iOS 13, *)) {
+		orientation = [UIApplication sharedApplication].delegate.window.windowScene.interfaceOrientation;
+	} else {
+		orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	}
+
+	return orientation;
+}
+
 Array ARKitInterface::raycast(Vector2 p_screen_coord) {
 	if (@available(iOS 11, *)) {
 		Array arr;
@@ -323,13 +337,7 @@ Array ARKitInterface::raycast(Vector2 p_screen_coord) {
 		point.x = p_screen_coord.x / screen_size.x;
 		point.y = p_screen_coord.y / screen_size.y;
 
-		UIInterfaceOrientation orientation = UIInterfaceOrientationUnknown;
-
-		if (@available(iOS 13, *)) {
-			orientation = [UIApplication sharedApplication].delegate.window.windowScene.interfaceOrientation;
-		} else {
-			orientation = [[UIApplication sharedApplication] statusBarOrientation];
-		}
+		UIInterfaceOrientation orientation = get_screen_orientation();
 
 		// This transform takes a point from image space to screen space
 		CGAffineTransform affine_transform = [ar_session.currentFrame displayTransformForOrientation:orientation viewportSize:CGSizeMake(screen_size.width, screen_size.height)];
@@ -694,13 +702,7 @@ void ARKitInterface::_process() {
 				// get some info about our screen and orientation
 				Size2 screen_size = DisplayServer::get_singleton()->screen_get_size();
 
-				UIInterfaceOrientation orientation = UIInterfaceOrientationUnknown;
-
-				if (@available(iOS 13, *)) {
-					orientation = [UIApplication sharedApplication].delegate.window.windowScene.interfaceOrientation;
-				} else {
-					orientation = [[UIApplication sharedApplication] statusBarOrientation];
-				}
+				UIInterfaceOrientation orientation = get_screen_orientation();
 
 				// Grab our camera image for our backbuffer
 				CVPixelBufferRef pixelBuffer = current_frame.capturedImage;
@@ -854,34 +856,39 @@ void ARKitInterface::_process() {
 
 					// copy our current frame transform
 					matrix_float4x4 m44 = camera.transform;
-					if (orientation == UIInterfaceOrientationLandscapeLeft) {
-						transform.basis.rows[0].x = -m44.columns[0][0];
-						transform.basis.rows[1].x = -m44.columns[0][1];
-						transform.basis.rows[2].x = -m44.columns[0][2];
-						transform.basis.rows[0].y = -m44.columns[1][0];
-						transform.basis.rows[1].y = -m44.columns[1][1];
-						transform.basis.rows[2].y = -m44.columns[1][2];
-					} else if (orientation == UIInterfaceOrientationPortrait) {
-						transform.basis.rows[0].x = m44.columns[1][0];
-						transform.basis.rows[1].x = m44.columns[1][1];
-						transform.basis.rows[2].x = m44.columns[1][2];
-						transform.basis.rows[0].y = -m44.columns[0][0];
-						transform.basis.rows[1].y = -m44.columns[0][1];
-						transform.basis.rows[2].y = -m44.columns[0][2];
-					} else if (orientation == UIInterfaceOrientationLandscapeRight) {
-						transform.basis.rows[0].x = m44.columns[0][0];
-						transform.basis.rows[1].x = m44.columns[0][1];
-						transform.basis.rows[2].x = m44.columns[0][2];
-						transform.basis.rows[0].y = m44.columns[1][0];
-						transform.basis.rows[1].y = m44.columns[1][1];
-						transform.basis.rows[2].y = m44.columns[1][2];
-					} else if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+					switch (orientation) {
+					case UIInterfaceOrientationPortraitUpsideDown:
 						transform.basis.rows[0].x = -m44.columns[1][0];
 						transform.basis.rows[1].x = -m44.columns[1][1];
 						transform.basis.rows[2].x = -m44.columns[1][2];
 						transform.basis.rows[0].y = m44.columns[0][0];
 						transform.basis.rows[1].y = m44.columns[0][1];
 						transform.basis.rows[2].y = m44.columns[0][2];
+						break;
+					case UIInterfaceOrientationLandscapeLeft:
+						transform.basis.rows[0].x = -m44.columns[0][0];
+						transform.basis.rows[1].x = -m44.columns[0][1];
+						transform.basis.rows[2].x = -m44.columns[0][2];
+						transform.basis.rows[0].y = -m44.columns[1][0];
+						transform.basis.rows[1].y = -m44.columns[1][1];
+						transform.basis.rows[2].y = -m44.columns[1][2];
+						break;
+					case UIInterfaceOrientationPortrait:
+						transform.basis.rows[0].x = m44.columns[1][0];
+						transform.basis.rows[1].x = m44.columns[1][1];
+						transform.basis.rows[2].x = m44.columns[1][2];
+						transform.basis.rows[0].y = -m44.columns[0][0];
+						transform.basis.rows[1].y = -m44.columns[0][1];
+						transform.basis.rows[2].y = -m44.columns[0][2];
+						break;
+					case UIInterfaceOrientationLandscapeRight:
+					default: // accounts for UIInterfaceOrientationUnknown
+						transform.basis.rows[0].x = m44.columns[0][0];
+						transform.basis.rows[1].x = m44.columns[0][1];
+						transform.basis.rows[2].x = m44.columns[0][2];
+						transform.basis.rows[0].y = m44.columns[1][0];
+						transform.basis.rows[1].y = m44.columns[1][1];
+						transform.basis.rows[2].y = m44.columns[1][2];
 					}
 
 					transform.basis.rows[0].z = m44.columns[2][0];
