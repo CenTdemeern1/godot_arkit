@@ -52,7 +52,7 @@ typedef PackedByteArray GodotUInt8Vector;
 
 #ifdef __OBJC__
 //#import <ARKit/ARKit.h>
-//#import <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
 #import <Metal/Metal.h>
 #endif
 
@@ -67,8 +67,10 @@ class ARKitShader;
 
 #ifdef __OBJC__
 typedef NSObject GodotARAnchor;
+typedef UIInterfaceOrientation ScreenOrientation;
 #else
 typedef void GodotARAnchor;
+typedef void ScreenOrientation;
 #endif
 
 
@@ -138,6 +140,7 @@ private:
 	Ref<XRPositionalTracker> get_anchor_for_uuid(const unsigned char *p_uuid, Ref<XRPositionalTracker> tracker);
 	void remove_anchor_for_uuid(const unsigned char *p_uuid);
 	void remove_all_anchors();
+	ScreenOrientation get_screen_orientation() const;
 
 protected:
 	static void _bind_methods();
