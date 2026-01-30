@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+//#include <godot_cpp/core/class_db.hpp>
+
 #include <gdextension_interface.h>
 
 static void initialize(void *data, GDExtensionInitializationLevel level) {}

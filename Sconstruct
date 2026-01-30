@@ -7,7 +7,7 @@ env = SConscript("godot-cpp/SConstruct").Clone()
 #compiledb = env.CompilationDatabase("compile_commands.json")
 #env.Alias("compiledb", compiledb)
 
-if env["platform"] in ["macos", "ios"]:
+if env["platform"] in ["ios"]:
     # Compile flags
     env.Append(LINKFLAGS="-framework Foundation")
     env.Append(LINKFLAGS="-framework UIKit")
@@ -41,9 +41,12 @@ if env["platform"] in ["macos", "ios"]:
         source=sources,
     )
 else:
-    '''dummy_env = Environment(CPPPATH="godot-cpp/gdextension")
+    dummy_env = Environment(CPPPATH="godot-cpp/gdextension")
+    #dummy_env = env
+    
     library = dummy_env.SharedLibrary(
         "addons/godot_arkit/build/libobjcgdextension{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
         source="src/dummy_main.c",
-    )'''
+    )
+
 Default(library)

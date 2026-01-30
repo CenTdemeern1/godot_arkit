@@ -5,8 +5,8 @@ compatibility_minimum = "4.1"
 
 [libraries]
 
-macos.debug = "build/libobjcgdextension.macos.template_debug.universal.dylib"
-macos.release = "build/libobjcgdextension.macos.template_release.universal.dylib"
+macos.debug = "build/libobjcgdextension.macos.template_debug.arm64.dylib"
+macos.release = "build/libobjcgdextension.macos.template_release.arm64.dylib"
 ios.debug = "build/libobjcgdextension.ios.template_debug.arm64.dylib"
 ios.debug.simulator = "build/libobjcgdextension.ios.template_debug.arm64.simulator.dylib"
 ios.release = "build/libobjcgdextension.ios.template_release.arm64.dylib"

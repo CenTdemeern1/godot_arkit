@@ -2,7 +2,9 @@
 extends EditorPlugin
 
 func _enter_tree():
-	add_autoload_singleton("ARKitInterfaceSingleton", "autoload.gd")
+	if OS.get_name() == "iOS":
+		add_autoload_singleton("ARKitInterfaceSingleton", "autoload.gd")
 
 func _exit_tree():
-	remove_autoload_singleton("ARKitInterfaceSingleton")
+	if OS.get_name() == "iOS":
+		remove_autoload_singleton("ARKitInterfaceSingleton")
