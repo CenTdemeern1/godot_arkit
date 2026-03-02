@@ -50,10 +50,16 @@ typedef PackedByteArray GodotUInt8Vector;
 
 #include <stdlib.h>
 
-#ifdef __OBJC__
+#if defined(__OBJC__) && !defined(ARKIT_DUMMY)
 //#import <ARKit/ARKit.h>
 #import <UIKit/UIKit.h>
 #import <Metal/Metal.h>
+
+typedef NSObject GodotARAnchor;
+typedef UIInterfaceOrientation ScreenOrientation;
+#else
+typedef void GodotARAnchor;
+typedef void ScreenOrientation;
 #endif
 
 /**
@@ -64,14 +70,6 @@ typedef PackedByteArray GodotUInt8Vector;
 
 // forward declaration for some needed objects
 class ARKitShader;
-
-#ifdef __OBJC__
-typedef NSObject GodotARAnchor;
-typedef UIInterfaceOrientation ScreenOrientation;
-#else
-typedef void GodotARAnchor;
-typedef void ScreenOrientation;
-#endif
 
 
 struct BlitToScreen {

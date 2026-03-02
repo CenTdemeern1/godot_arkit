@@ -7,7 +7,10 @@ env = SConscript("godot-cpp/SConstruct").Clone()
 #compiledb = env.CompilationDatabase("compile_commands.json")
 #env.Alias("compiledb", compiledb)
 
-if env["platform"] in ["ios"]:
+def is_ios():
+    return env["platform"] == "ios"
+
+if is_ios():
     # Compile flags
     env.Append(LINKFLAGS="-framework Foundation")
     env.Append(LINKFLAGS="-framework UIKit")
@@ -16,37 +19,36 @@ if env["platform"] in ["ios"]:
     env.Append(LINKFLAGS="-framework CoreGraphics")
     #env.Append(LINKFLAGS="-framework CoreMotion")
     env.Append(LINKFLAGS="-framework CoreVideo")
+else:
+    # Stub build on everything except iOS
+    env.Append(CPPDEFINES="ARKIT_DUMMY")
 
-    # Compile with debugging symbols
-    if ARGUMENTS.get("debugging_symbols") == 'true':
-        if "-O2" in env["CCFLAGS"]:
-            env["CCFLAGS"].remove("-O2")
-        env.Append(CCFLAGS=["-g", "-O0"])
+# Compile with debugging symbols
+if ARGUMENTS.get("debugging_symbols") == 'true':
+    if "-O2" in env["CCFLAGS"]:
+        env["CCFLAGS"].remove("-O2")
+    env.Append(CCFLAGS=["-g", "-O0"])
 
-    # Setup variant build dir for each setup
-    def remove_prefix(s, prefix):
-        return s[len(prefix):] if s.startswith(prefix) else s
+# Setup variant build dir for each setup
+def remove_prefix(s, prefix):
+    return s[len(prefix):] if s.startswith(prefix) else s
 
-    build_dir = "build/{}".format(remove_prefix(env["suffix"], "."))
-    VariantDir(build_dir, 'src', duplicate=False)
+build_dir = "build/{}".format(remove_prefix(env["suffix"], "."))
+VariantDir(build_dir, 'src', duplicate=False)
 
-    # Build Objective-C GDExtension
+# Build Objective-C GDExtension
+if is_ios():
     source_directories = ["."]
     sources = [
         Glob("{}/{}/*.cpp".format(build_dir, directory)) + Glob("{}/{}/*.mm".format(build_dir, directory))
         for directory in source_directories
     ]
-    library = env.SharedLibrary(
-        "addons/godot_arkit/build/libobjcgdextension{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
-        source=sources,
-    )
 else:
-    dummy_env = Environment(CPPPATH="godot-cpp/gdextension")
-    #dummy_env = env
-    
-    library = dummy_env.SharedLibrary(
-        "addons/godot_arkit/build/libobjcgdextension{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
-        source="src/dummy_main.c",
-    )
+    sources = ["src/main.mm", "src/arkit_module.cpp", "src/dummy_arkit_interface.cpp", "src/arkit_anchor_mesh.mm", "src/arkit_anchor_image.mm"]
+
+library = env.SharedLibrary(
+    "addons/godot_arkit/build/libobjcgdextension{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+    source=sources,
+)
 
 Default(library)
