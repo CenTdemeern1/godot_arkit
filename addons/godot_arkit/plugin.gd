@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 func _enter_tree():
-	add_autoload_singleton("ARKitInterfaceSingleton", "autoload.gd")
+	add_autoload_singleton("ARKit", "ARKit.gd")
 
 func _exit_tree():
-	remove_autoload_singleton("ARKitInterfaceSingleton")
+	remove_autoload_singleton("ARKit")

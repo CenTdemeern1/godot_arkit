@@ -1,20 +1,26 @@
-@tool
 extends Node
 
-var xr_interface : XRInterface
-const FeedRenderer = preload("renderer/feed_renderer.gd")
-var feed_renderer := FeedRenderer.new()
+var xr_interface: XRInterface
+var feed_renderer: FeedRenderer
+var _initialized := false
 
-func get_interface():
+## Returns whether ARKit is available on this system.
+func is_available() -> bool:
+	return OS.get_name() == "iOS"
+
+func get_interface() -> XRInterface:
 	return xr_interface
 
-func _enter_tree():
+func _ready() -> void:
+	if !is_available():
+		set_process(false)
+		return
+	feed_renderer = FeedRenderer.new()
 	xr_interface = ARKitInterface.new()
 	if xr_interface:
 		XRServer.add_interface(xr_interface)
 		print("ARKitInterface has been added to the XRServer")
 
-var _initialized := false
 func _process(delta: float) -> void:
 	var imgs : Array[Image] = xr_interface.get_image_planes()
 	
@@ -45,9 +51,9 @@ func _process(delta: float) -> void:
 	
 	feed_renderer.render_feed()
 
-func _exit_tree():
+func _exit_tree() -> void:
 	if xr_interface:
 		XRServer.remove_interface(xr_interface)
 		xr_interface = null
-		
+	if feed_renderer:
 		feed_renderer.cleanup()

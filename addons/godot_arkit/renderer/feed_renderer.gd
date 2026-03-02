@@ -1,4 +1,5 @@
 extends RefCounted
+class_name FeedRenderer
 
 ## FeedRenderer generates an RGB CameraFeed from Y+CBCR images
 ## Usage [WIP]:
@@ -11,7 +12,6 @@ func _init() -> void:
 	CameraServer.monitoring_feeds = true
 	feed = CameraFeed.new()
 	feed.set_name("ShaderCameraFeed")
-	
 
 func set_feed_size(size:Vector2i):
 	feed_size = size
