@@ -49,8 +49,6 @@
 // #import <ARKit/ARKit.h>
 // #import <UIKit/UIKit.h>
 
-#include <dlfcn.h>
-
 #include "arkit_anchor_image.h"
 
 void ARKitAnchorImage::set_image(Ref<Image> p_image) {

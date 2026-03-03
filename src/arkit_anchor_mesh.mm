@@ -49,8 +49,6 @@
 // #import <ARKit/ARKit.h>
 // #import <UIKit/UIKit.h>
 
-#include <dlfcn.h>
-
 #include "arkit_anchor_mesh.h"
 
 void ARKitAnchorMesh::set_mesh(Ref<Mesh> p_mesh) {

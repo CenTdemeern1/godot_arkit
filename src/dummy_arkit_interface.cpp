@@ -10,8 +10,6 @@
 
 #include "arkit_interface.h"
 
-#include <dlfcn.h>
-
 #ifdef ARKIT_DUMMY
 ARKitInterface::ARKitInterface() {
 	initialized = false;
