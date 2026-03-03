@@ -13,6 +13,7 @@ build/*
 *.lib
 *.so
 *.dll
+*.exp
 *.dylib
 *.framework
 compile_commands.json
