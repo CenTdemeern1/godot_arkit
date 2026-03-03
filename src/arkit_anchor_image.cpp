@@ -46,9 +46,6 @@
 #define GODOT_AR_STATE_INSUFFICIENT_FEATURES XRInterface::XR_INSUFFICIENT_FEATURES
 #define GODOT_AR_STATE_UNKNOWN_TRACKING XRInterface::XR_UNKNOWN_TRACKING
 
-// #import <ARKit/ARKit.h>
-// #import <UIKit/UIKit.h>
-
 #include "arkit_anchor_image.h"
 
 void ARKitAnchorImage::set_image(Ref<Image> p_image) {
