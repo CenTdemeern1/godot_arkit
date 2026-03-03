@@ -36,15 +36,17 @@ def remove_prefix(s, prefix):
 build_dir = "build/{}".format(remove_prefix(env["suffix"], "."))
 VariantDir(build_dir, 'src', duplicate=False)
 
-# Build Objective-C GDExtension
 if is_ios():
+    # Build Objective-C GDExtension
     source_directories = ["."]
     sources = [
         Glob("{}/{}/*.cpp".format(build_dir, directory)) + Glob("{}/{}/*.mm".format(build_dir, directory))
         for directory in source_directories
     ]
 else:
-    sources = ["src/main.mm", "src/arkit_module.cpp", "src/dummy_arkit_interface.cpp", "src/arkit_anchor_mesh.mm", "src/arkit_anchor_image.mm"]
+    # Build dummy
+    # This happens to currently be all the .cpp files...
+    sources = ["src/main.cpp", "src/arkit_module.cpp", "src/dummy_arkit_interface.cpp", "src/arkit_anchor_mesh.cpp", "src/arkit_anchor_image.cpp"]
 
 library = env.SharedLibrary(
     "addons/godot_arkit/build/libobjcgdextension{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
